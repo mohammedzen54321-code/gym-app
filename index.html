@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Gym App</title>
+</head>
+<body style="font-family: Arial; padding:20px;">
+  <h1>🏋️ Gym Tracker</h1>
+
+  <select id="exercise"></select><br><br>
+
+  <input id="weight" placeholder="Gewicht"><br><br>
+  <input id="reps" placeholder="Reps"><br><br>
+
+  <button onclick="add()">Speichern</button>
+
+  <h2>Workouts</h2>
+  <div id="list"></div>
+
+<script>
+const API = "https://gym-app-2-knn2.onrender.com/api";
+
+async function load() {
+  let ex = await fetch(API + "/exercises").then(r=>r.json());
+  let sel = document.getElementById("exercise");
+  ex.forEach(e=>{
+    let o=document.createElement("option");
+    o.text=e.name;
+    sel.add(o);
+  });
+
+  let w = await fetch(API + "/workouts").then(r=>r.json());
+  let list = document.getElementById("list");
+  w.forEach(x=>{
+    list.innerHTML += `<div>${x.exercise_name} - ${x.weight}kg x ${x.reps}</div>`;
+  });
+}
+
+async function add(){
+  let data = {
+    exercise_name: document.getElementById("exercise").value,
+    weight: document.getElementById("weight").value,
+    reps: document.getElementById("reps").value
+  };
+
+  await fetch(API + "/workouts",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify(data)
+  });
+
+  location.reload();
+}
+
+load();
+</script>
+</body>
+</html>
